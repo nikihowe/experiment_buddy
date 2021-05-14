@@ -56,23 +56,18 @@ def register(config_params):
         if _is_valid_hyperparam(k, v):
             parser.add_argument(f"--{k}", f"--^{k}", type=type(v), default=v)
 
-    parsed = parser.parse_args()
-
-    for k, v in vars(parsed).items():
-        k = k.lstrip(wandb_escape)
-        config_params[k] = v
-
-    hyperparams = config_params.copy()
+    hyperparams = {
+        **config_params,
+        **{k.lstrip(wandb_escape): v for k, v in vars(parser.parse_args()).items()}
+    }
 
 
 def _is_valid_hyperparam(key, value):
-    if key.startswith("__") and key.endswith("__"):
-        return False
-    if key == "_":
-        return False
-    if isinstance(value, (types.FunctionType, types.MethodType, types.ModuleType)):
-        return False
-    return True
+    return not any([
+        key.startswith("__") and key.endswith("__"),
+        key == "_",
+        isinstance(value, (types.FunctionType, types.MethodType, types.ModuleType)),
+    ])
 
 
 class WandbWrapper:
@@ -208,10 +203,10 @@ def deploy(host: str = "", sweep_yaml: str = "", proc_num: int = 1, wandb_kwargs
 
 
 def _ask_experiment_id(cluster, sweep):
-    title = f'{"[CLUSTER" if cluster else "[LOCAL"}'
     if sweep:
-        title = f"{title}-SWEEP"
-    title = f"{title}]"
+        title = f'[{"CLUSTER" if cluster else "LOCAL"}-SWEEP]'
+    else:
+        title = f'[{"CLUSTER" if cluster else "LOCAL"}]'
 
     try:
         import tkinter.simpledialog  # fails on the server or colab
@@ -357,7 +352,7 @@ def git_sync(experiment_id, git_repo):
             tag_name = f"snapshot/{active_branch}/{git_hash}"
             subprocess.check_output(f"git tag {tag_name}", shell=True)
             subprocess.check_output(f"git push {git_repo.remotes[0]} {tag_name}", shell=True)  # send to online repo
-            subprocess.check_output(f"git reset HEAD~1", shell=True)  # untrack the changes
+            subprocess.check_output(f"git reset -q HEAD~1 ", shell=True)  # untrack the changes
     finally:
         subprocess.check_output(f"git checkout {active_branch}", shell=True)
     return git_hash

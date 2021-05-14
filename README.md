@@ -3,6 +3,35 @@
 ping me on slack @delvermm to understand how to get started.
 
 
+Examples to start development:
+```bash
+mkdir ~/buddy_dev && cd ~/buddy_dev
+
+git clone https://github.com/ministry-of-silly-code/examples.git 
+cd ~/buddy_dev/examples
+virtualenv venv && source venv/bin/activate && pip install -r requirements.txt
+
+cd ~/buddy_dev/
+git clone clone https://github.com/ministry-of-silly-code/experiment_buddy.git
+cd ~/buddy_dev/experiment_buddy
+pip install -e ~/buddy_dev/experiment_buddy
+
+pip install tkinter # <-- To have cool GUI :D (bun only in linux desktop)
+```
+
+To watach the result on the server: 
+ - `/home/mila/d/delvermm/experiments/`
+
+ToDo:
+ - wandbs deploy on Colab
+ - ssh detatched when deploying
+ - git|telegram|mail|slack|other... to notify the user in case of failure
+
+To start the example test:
+```bash
+python mnist_classifier.py
+```
+
 `experiment_buddy` aims to reduce the overhead to deploy experiments on servers.
 
 buddy is a work in progress, if you are intrerested in using it in your workflow, ping me in slack @delvermm

@@ -35,10 +35,10 @@ log "Setting up venv @ $SLURM_TMPDIR/venv..."
 python3 -m virtualenv --system-site-packages "$SLURM_TMPDIR/venv"
 # shellcheck disable=SC1090
 source "$SLURM_TMPDIR/venv/bin/activate"
-python3 -m pip install --upgrade pip
+python3 -m pip -q install --upgrade pip
 
 log "Downloading modules"
-python3 -m pip install -r "requirements.txt" --exists-action w -f https://download.pytorch.org/whl/torch_stable.html
+python3 -m pip -q install -r "requirements.txt" --exists-action w -f https://download.pytorch.org/whl/torch_stable.html
 
 export XLA_FLAGS=--xla_gpu_cuda_data_dir=/cvmfs/ai.mila.quebec/apps/x86_64/common/cuda/10.1/
 # TODO: the client should send the experiment_buddy version to avoid issues
