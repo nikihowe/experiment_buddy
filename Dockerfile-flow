@@ -9,6 +9,6 @@ RUN virtualenv buddy-env \
  && . ./buddy-env/bin/activate \
  && pip install GitPython tensorboardX matplotlib wandb fabric cloudpickle PyYaml paramiko tqdm jax jaxlib
 
-COPY test_flow.sh .
+COPY test_scripts/test_flow.sh .
 
 CMD ./test_flow.sh
