@@ -1,9 +1,11 @@
 import enum
+import requests
 import os
+import time
 
 import fabric
-import invoke
 import git
+import invoke
 
 
 class Backend(enum.Enum):
@@ -36,3 +38,15 @@ def get_project_name(git_repo: git.Repo) -> str:
     remote_url = git_repo_remotes[0].config_reader.get("url")
     project_name, _ = os.path.splitext(os.path.basename(remote_url))
     return project_name
+
+
+def telemetry(f):
+    def wrapped_f(*args, **kwargs):
+        tic = time.perf_counter()
+        retr = f(*args, **kwargs)
+        toc = time.perf_counter()
+        method_name = f.__name__
+        requests.get(f"65.21.155.92/{method_name}/{toc - tic}", timeout=2.)
+        return retr
+
+    return wrapped_f
