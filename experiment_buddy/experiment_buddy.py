@@ -207,7 +207,7 @@ def deploy(host: str = "", sweep_yaml: str = "", proc_num: int = 1, wandb_kwargs
             extra_slurm_headers += "\n#SBATCH --partition=main"
 
         _commit_and_sendjob(host, experiment_id, sweep_yaml, git_repo, project_name, proc_num, extra_slurm_headers, wandb_kwargs)
-        sys.exit()
+        raise experiment_buddy.utils.StopProcess()
 
 
 def _ask_experiment_id(cluster, sweep):
