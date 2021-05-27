@@ -2,12 +2,14 @@ import asyncio
 import atexit
 import enum
 import os
-
+import json
+import ramda as R
 import aiohttp
 import fabric
 import invoke
 import git
 from funcy import log_durations
+from contextlib import ExitStack
 
 
 class Backend(enum.Enum):
@@ -40,6 +42,16 @@ def get_project_name(git_repo: git.Repo) -> str:
     remote_url = git_repo_remotes[0].config_reader.get("url")
     project_name, _ = os.path.splitext(os.path.basename(remote_url))
     return project_name
+
+
+def build_node_ban_list():
+    with ExitStack() as stack:
+        paths = os.getenv('NODE_BAN_LISTS', '').split(':')
+        # noinspection PyTypeChecker
+        files = [stack.enter_context(open(path)) for path in paths]
+        ban_lists = [json.load(node_list)["excluded_nodes"] for node_list in files]
+
+    return set(sum(ban_lists, []))
 
 
 def fire_and_forget(f):

@@ -61,6 +61,16 @@ More details on experiment-buddy:
 1. experiment-buddy will add tagged commits to a dangling branch 
 2. Supports: Unix based OS
 
+Populating the environment variable `$NODE_BAN_LISTS` you can define a series of configuration files where you can specify which nodes exclude from the computation.
+
+The configuration file has to be in the form: 
+```json
+{
+  "excluded_nodes": [ "<nodeA>", "<nodeB>", "<nodeC>", ...],
+   "...other configurations": ...
+}
+```
+
 ## For the tester
 
 #### Local flow

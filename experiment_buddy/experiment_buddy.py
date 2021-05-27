@@ -21,6 +21,7 @@ from paramiko.ssh_exception import SSHException
 import experiment_buddy.utils
 from experiment_buddy.utils import get_backend
 from experiment_buddy.utils import get_project_name
+from experiment_buddy.utils import build_node_ban_list
 
 try:
     import torch
@@ -302,6 +303,11 @@ def _commit_and_sendjob(hostname: str, experiment_id: str, sweep_yaml: str, git_
                         proc_num: int, extra_slurm_header: str, wandb_kwargs: dict):
     ssh_session = _open_ssh_session(hostname)
     scripts_folder = _ensure_scripts_directory(ssh_session, extra_slurm_header, git_repo.working_dir)
+
+    node_ban_list = build_node_ban_list()
+    if node_ban_list:
+        extra_slurm_header += f'\n#SBATCH --exclude={",".join(node_ban_list)}\n'
+
     hash_commit = git_sync(experiment_id, git_repo)
 
     _check_or_copy_wandb_key(ssh_session)
