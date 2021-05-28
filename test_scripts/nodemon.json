@@ -1,0 +1,6 @@
+{
+  "verbose": false,
+  "ignore": ["examples/**"],
+  "exec": "./test_scripts/watcher.sh",
+  "ext": "py,sh"
+}

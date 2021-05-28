@@ -18,7 +18,7 @@ virtualenv -q buddy-env  > /dev/null
 source ./buddy-env/bin/activate > /dev/null
 
 # 2 - Clone [or create] your project, in this case I'm using a basic mnist_classifier
-git clone -q -b feature/testing git@github.com:DrTtnk/examples.git
+git clone -q -b "$BUDDY_CURRENT_TESTING_BRANCH" git@github.com:DrTtnk/examples.git
 cd examples
 
 # 3 - Install the dependencies

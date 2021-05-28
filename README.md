@@ -94,5 +94,5 @@ docker run -v ~/.ssh:/root/.ssh --rm -i \
 sudo chown root:$USER ~/.ssh/config && sudo chmod 640 ~/.ssh/config
 
 #The first runs is quite slow, give it a few minutes 
-nodemon --exec "./test_scripts/watcher.sh" -e py,sh
+nodemon --config ./test_scripts/nodemon.json
 ```
