@@ -3,7 +3,6 @@ import atexit
 import enum
 import os
 import json
-import ramda as R
 import aiohttp
 import fabric
 import invoke
@@ -45,10 +44,14 @@ def get_project_name(git_repo: git.Repo) -> str:
 
 
 def build_node_ban_list():
+    paths = [
+        '/etc/xdg/experiment_buddy/buddyrc',
+        '~/.config/experiment_buddy/buddyrc'
+    ]
+
     with ExitStack() as stack:
-        paths = os.getenv('NODE_BAN_LISTS', '').split(':')
         # noinspection PyTypeChecker
-        files = [stack.enter_context(open(path)) for path in paths]
+        files = [stack.enter_context(open(path)) for path in paths if os.path.isfile(path)]
         ban_lists = [json.load(node_list)["excluded_nodes"] for node_list in files]
 
     return set(sum(ban_lists, []))
