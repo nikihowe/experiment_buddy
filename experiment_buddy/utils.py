@@ -2,12 +2,25 @@ import asyncio
 import atexit
 import enum
 import os
-
+from coverage import Coverage
 import aiohttp
 import fabric
 import invoke
 import git
 from funcy import log_durations
+
+
+class CoverageBuddy:
+    def __init__(self):
+        atexit.register(self.__exit__)
+
+    def __enter__(self):
+        self.coverage = Coverage()
+        self.coverage.start()
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.coverage.stop()
+        self.coverage.html_report(directory='coverage')
 
 
 class Backend(enum.Enum):
