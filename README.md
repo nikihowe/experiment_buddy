@@ -60,39 +60,3 @@ And you need to have your cluster private key enabled, more info [here](https://
 More details on experiment-buddy:
 1. experiment-buddy will add tagged commits to a dangling branch 
 2. Supports: Unix based OS
-
-## For the tester
-
-#### Local flow
-```shell
-docker run -v ~/.ssh:/root/.ssh --rm -it \
-           -e WANDB_API_KEY=$WANDB_API_KEY \
-           -e GIT_MAIL=$(git config user.email) \
-           -e GIT_NAME=$(git config user.name) \
-           -e BUDDY_CURRENT_TESTING_BRANCH=$(git rev-parse --abbrev-ref HEAD) \
-           -v $(pwd)/test_scripts/test_flow.sh:/test_flow.sh \
-           -u root:$(id -u $USER) $(docker build -f ./Dockerfile-flow -q .) \
-           /test_flow.sh
-```   
-
-#### Remote flow
-```shell
-docker run -v ~/.ssh:/root/.ssh --rm -i \
-           -e WANDB_API_KEY=$WANDB_API_KEY \
-           -e GIT_MAIL=$(git config user.email) \
-           -e GIT_NAME=$(git config user.name) \
-           -e BUDDY_CURRENT_TESTING_BRANCH=$(git rev-parse --abbrev-ref HEAD) \
-           -v $(pwd)/test_scripts/test_flow.sh:/test_flow.sh \
-           -e ON_CLUSTER=1 \
-           -u root:$(id -u $USER) $(docker build -f ./Dockerfile-flow -q .) \
-           /test_flow.sh
-```
-
-#### Remote watcher
-```shell
-#To allow the docker to communicate with the cluster you may need to change your ~/.ssh/config permissions 
-sudo chown root:$USER ~/.ssh/config && sudo chmod 640 ~/.ssh/config
-
-#The first runs is quite slow, give it a few minutes 
-nodemon --config ./test_scripts/nodemon.json
-```
