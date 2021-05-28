@@ -9,6 +9,8 @@ import invoke
 import git
 from funcy import log_durations
 
+is_running_remotely = "SLURM_JOB_ID" in os.environ.keys() or "BUDDY_IS_DEPLOYED" in os.environ.keys()
+
 
 class Backend(enum.Enum):
     GENERAL: str = "general"
@@ -61,9 +63,9 @@ atexit.register(__async_cleanup)
 async def __remote_time_logger(elapsed: str):
     import re
     elapsed, function_name = re.search(r'([\d.]+).+in (\w+)', elapsed).groups()
-
+    running_env = 'local' if is_running_remotely else 'cluster'
     async with aiohttp.ClientSession() as session:
-        async with session.get(f'http://65.21.155.92/{function_name}/{elapsed}') as response:
+        async with session.get(f'http://65.21.155.92/{running_env}/{function_name}/{elapsed}') as response:
             await response.text()
 
 

@@ -22,6 +22,7 @@ from paramiko.ssh_exception import SSHException
 import experiment_buddy.utils
 from experiment_buddy.utils import get_backend
 from experiment_buddy.utils import get_project_name
+from experiment_buddy.utils import is_running_remotely
 
 try:
     import torch
@@ -164,7 +165,6 @@ def deploy(host: str = "", sweep_yaml: str = "", proc_num: int = 1, wandb_kwargs
         wandb_kwargs = {}
 
     debug = '_pydev_bundle.pydev_log' in sys.modules.keys() and not os.environ.get('BUDDY_DEBUG_DEPLOYMENT', False)
-    is_running_remotely = "SLURM_JOB_ID" in os.environ.keys() or "BUDDY_IS_DEPLOYED" in os.environ.keys()
     local_run = not host
 
     try:
