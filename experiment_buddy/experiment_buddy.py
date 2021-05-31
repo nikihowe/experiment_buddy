@@ -19,10 +19,7 @@ import yaml
 from invoke import UnexpectedExit
 from paramiko.ssh_exception import SSHException
 
-import experiment_buddy.utils
-from experiment_buddy.utils import get_backend
-from experiment_buddy.utils import get_project_name
-from experiment_buddy.utils import is_running_remotely
+from experiment_buddy import utils
 
 try:
     import torch
@@ -159,7 +156,7 @@ class WandbWrapper:
         self.run.watch(*args, **kwargs)
 
 
-@experiment_buddy.utils.telemetry
+@utils.telemetry
 def deploy(host: str = "", sweep_yaml: str = "", proc_num: int = 1, wandb_kwargs=None, extra_slurm_headers="") -> WandbWrapper:
     if wandb_kwargs is None:
         wandb_kwargs = {}
@@ -172,7 +169,7 @@ def deploy(host: str = "", sweep_yaml: str = "", proc_num: int = 1, wandb_kwargs
     except git.InvalidGitRepositoryError:
         raise ValueError(f"Could not find a git repo")
 
-    project_name = get_project_name(git_repo)
+    project_name = utils.get_project_name(git_repo)
 
     if local_run and sweep_yaml:
         raise NotImplemented("Local sweeps are not supported")
@@ -180,7 +177,7 @@ def deploy(host: str = "", sweep_yaml: str = "", proc_num: int = 1, wandb_kwargs
     wandb_kwargs = {'project': project_name, **wandb_kwargs}
     common_kwargs = {'debug': debug, 'wandb_kwargs': wandb_kwargs, }
 
-    if is_running_remotely():
+    if utils.is_running_remotely():
         print("using wandb")
         experiment_id = f"{git_repo.head.commit.message.strip()}"
         jid = datetime.datetime.now().strftime("%b%d_%H-%M-%S")
@@ -262,7 +259,7 @@ def _ensure_scripts_directory(ssh_session: fabric.Connection, extra_slurm_header
     remote_tmp_folder = retr.stdout.strip() + "/"
     ssh_session.put(f'{SCRIPTS_PATH}/common/common.sh', remote_tmp_folder)
 
-    scripts_dir = os.path.join(SCRIPTS_PATH, get_backend(ssh_session, working_dir).value)
+    scripts_dir = os.path.join(SCRIPTS_PATH, utils.get_backend(ssh_session, working_dir).value)
 
     for file in os.listdir(scripts_dir):
         if extra_slurm_header and file in ("run_sweep.sh", "srun_python.sh"):
